@@ -30,7 +30,7 @@
     }
   },
   "radius": {
-    "$type": "borderRadius",
+    "$type": "dimension",
     "sm": { "$value": "4px" },
     "md": { "$value": "8px" }
   }

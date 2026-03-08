@@ -6,19 +6,20 @@ export const unusedRule: AuditRule = {
 
   run(tokens: ParsedToken[]): AuditIssue[] {
     // Build a set of all paths that are referenced as aliases
+    // (includes references within composite token sub-properties)
     const referencedPaths = new Set<string>();
     for (const token of tokens) {
-      if (token.alias) {
-        referencedPaths.add(token.alias);
+      for (const alias of token.aliases) {
+        referencedPaths.add(alias);
       }
     }
 
     const issues: AuditIssue[] = [];
 
     for (const token of tokens) {
-      // A token is "unused" if nothing aliases it AND it is not itself an alias.
+      // A token is "unused" if nothing aliases it AND it has no outgoing aliases.
       // Leaf tokens (non-aliases) that are never referenced are flagged.
-      if (!token.alias && !referencedPaths.has(token.path)) {
+      if (token.aliases.length === 0 && !referencedPaths.has(token.path)) {
         issues.push({
           token,
           severity: "warn",

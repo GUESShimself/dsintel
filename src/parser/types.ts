@@ -11,8 +11,12 @@ export interface ParsedToken {
   type?: string;
   /** DTCG $description if present */
   description?: string;
-  /** Alias reference if value is a DTCG alias (e.g. "{color.base.blue}") */
+  /** Top-level alias reference if the entire value is a DTCG alias (e.g. "{color.base.blue}") */
   alias?: string;
+  /** All alias references found in the value, including within composite sub-properties */
+  aliases: string[];
+  /** Whether the token is deprecated ($deprecated) */
+  deprecated?: boolean | string;
   /** Inferred category */
   category: TokenCategory;
 }

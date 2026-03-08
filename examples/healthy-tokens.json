@@ -1,0 +1,76 @@
+{
+  "color": {
+    "$type": "color",
+    "base": {
+      "blue": { "$value": "#0066ff" },
+      "green": { "$value": "#00a86b" },
+      "red": { "$value": "#e03131" },
+      "gray": {
+        "100": { "$value": "#f8f9fa" },
+        "200": { "$value": "#e9ecef" },
+        "500": { "$value": "#868e96" },
+        "800": { "$value": "#343a40" },
+        "900": { "$value": "#212529" }
+      }
+    },
+    "brand": {
+      "primary": {
+        "$value": "{color.base.blue}",
+        "$description": "Main brand color used for primary actions"
+      },
+      "success": { "$value": "{color.base.green}" },
+      "danger": { "$value": "{color.base.red}" }
+    },
+    "surface": {
+      "default": { "$value": "{color.base.gray.100}" },
+      "muted": { "$value": "{color.base.gray.200}" }
+    },
+    "text": {
+      "default": { "$value": "{color.base.gray.900}" },
+      "muted": { "$value": "{color.base.gray.500}" }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "xs": { "$value": "4px" },
+    "sm": { "$value": "8px" },
+    "md": { "$value": "16px" },
+    "lg": { "$value": "24px" },
+    "xl": { "$value": "32px" },
+    "xxl": { "$value": "48px" }
+  },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "sans": { "$value": ["Inter", "Helvetica", "Arial", "sans-serif"] },
+      "mono": { "$value": ["JetBrains Mono", "Fira Code", "monospace"] }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "regular": { "$value": 400 },
+      "medium": { "$value": 500 },
+      "bold": { "$value": 700 }
+    },
+    "size": {
+      "$type": "dimension",
+      "xs": { "$value": "12px" },
+      "sm": { "$value": "14px" },
+      "md": { "$value": "16px" },
+      "lg": { "$value": "20px" },
+      "xl": { "$value": "24px" }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "sm": { "$value": "4px" },
+    "md": { "$value": "8px" },
+    "lg": { "$value": "16px" },
+    "full": { "$value": "9999px" }
+  },
+  "duration": {
+    "$type": "duration",
+    "fast": { "$value": "100ms" },
+    "normal": { "$value": "200ms" },
+    "slow": { "$value": "400ms" }
+  }
+}

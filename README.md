@@ -2,7 +2,7 @@
 
 A CLI tool that audits design token files for quality and consistency issues. Supports the [W3C Design Tokens Community Group (DTCG)](https://tr.designtokens.org/format/) format.
 
-![CLI Audit Report](wireframes/CLI%20Audit%20Report%20–%20dsintel%20audit.png)
+![CLI Audit Report](wireframes/cli-messy-output.png)
 
 ## What it does
 
@@ -31,6 +31,19 @@ dsintel audit path/to/tokens.json
 
 # Show all issues (default truncates to 5 per category)
 dsintel audit path/to/tokens.json --verbose
+
+# Machine-readable output
+dsintel audit path/to/tokens.json --output json
+```
+
+### Try the examples
+
+```bash
+# Clean token file — passes audit
+dsintel audit examples/healthy-tokens.json
+
+# Token file with issues — naming violations, semantic drift, deprecated tokens
+dsintel audit examples/messy-tokens.json
 ```
 
 ### Example token file (W3C DTCG format)

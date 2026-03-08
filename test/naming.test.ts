@@ -7,6 +7,7 @@ function makeToken(path: string, segments?: string[]): ParsedToken {
     path,
     rawSegments: segments ?? path.split("."),
     value: "#000",
+    aliases: [],
     category: "color",
   };
 }

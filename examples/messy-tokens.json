@@ -1,0 +1,62 @@
+{
+  "color": {
+    "$type": "color",
+    "base": {
+      "blue": { "$value": "#0066ff" },
+      "red": { "$value": "#e03131" },
+      "gray": { "$value": "#9a9a9a" },
+      "offWhite": { "$value": "#fafafa" }
+    },
+    "brand": {
+      "primary": { "$value": "{color.base.blue}" }
+    },
+    "brandPrimary": {
+      "$value": "#0066ff",
+      "$description": "Duplicate of brand.primary — should be an alias"
+    },
+    "surface": {
+      "default": {
+        "$value": "{color.base.red}",
+        "$description": "Oops — surface.default points to red instead of a neutral"
+      }
+    },
+    "bg_card": { "$value": "#ffffff" },
+    "textMuted": { "$value": "#767676" }
+  },
+  "spacing-sm": {
+    "$type": "dimension",
+    "$value": "8px"
+  },
+  "spacing-md": {
+    "$type": "dimension",
+    "$value": "16px"
+  },
+  "spacing-lg": {
+    "$type": "dimension",
+    "$value": "24px"
+  },
+  "font": {
+    "$type": "fontFamily",
+    "family": {
+      "sans": { "$value": "Inter, sans-serif" },
+      "mono": { "$value": "JetBrains Mono, monospace" }
+    },
+    "size": {
+      "bodyLarge": { "$value": "18px" },
+      "heading_xl": { "$value": "36px" }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "sm": { "$value": "4px" },
+    "md": { "$value": "8px" }
+  },
+  "legacy": {
+    "$deprecated": true,
+    "btn": {
+      "$type": "color",
+      "bg": { "$value": "#336699" },
+      "hover": { "$value": "#264d73" }
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
 A CLI tool that audits design token files for quality and consistency issues. Supports the [W3C Design Tokens Community Group (DTCG)](https://tr.designtokens.org/format/) format.
 
-![CLI Audit Report](wireframes/cli-messy-output.png)
+![CLI Audit Report](https://raw.githubusercontent.com/GUESShimself/dsintel/main/wireframes/cli-messy-output.png)
 
 ## What it does
 

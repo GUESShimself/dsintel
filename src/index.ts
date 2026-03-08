@@ -7,6 +7,10 @@ import { formatCliReport, formatJsonReport } from "./reporter/index.js";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { execSync } from "node:child_process";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { version } = require("../package.json") as { version: string };
 
 function git(cmd: string): string | undefined {
   try {
@@ -35,7 +39,7 @@ const program = new Command();
 program
   .name("dsintel")
   .description("Design system token auditing tool")
-  .version("0.1.0");
+  .version(version);
 
 program
   .command("audit")
@@ -61,6 +65,7 @@ program
         const now = new Date().toISOString().replace("T", " ").replace(/\.\d+Z$/, " UTC");
         report = formatCliReport(summary, {
           verbose: opts.verbose,
+          version,
           reportHash,
           repo: gitCtx.repo,
           branch: gitCtx.branch,

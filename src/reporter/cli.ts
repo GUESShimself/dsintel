@@ -29,6 +29,7 @@ function padNum(n: number, width: number): string {
 
 export interface CliReportOptions {
   verbose?: boolean;
+  version?: string;
   /** SHA hash for the report URL (used when dashboard is available) */
   reportHash?: string;
   repo?: string;
@@ -43,6 +44,7 @@ export function formatCliReport(
 ): string {
   const {
     verbose = false,
+    version = "0.0.0",
     reportHash,
     repo,
     branch,
@@ -54,7 +56,7 @@ export function formatCliReport(
 
   // ── Header ──────────────────────────────────────────
   lines.push("");
-  lines.push(chalk.bold(`  DS Intelligence  v0.1.0`));
+  lines.push(chalk.bold(`  DS Intelligence  v${version}`));
   if (repo) {
     lines.push(chalk.dim(`  Repo:       `) + repo);
   }

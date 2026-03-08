@@ -29,6 +29,7 @@ function padNum(n: number, width: number): string {
 
 export interface CliReportOptions {
   verbose?: boolean;
+  /** SHA hash for the report URL (used when dashboard is available) */
   reportHash?: string;
   repo?: string;
   branch?: string;
@@ -42,7 +43,7 @@ export function formatCliReport(
 ): string {
   const {
     verbose = false,
-    reportHash = "preview",
+    reportHash,
     repo,
     branch,
     commit,
@@ -139,10 +140,13 @@ export function formatCliReport(
   // ── Footer ──────────────────────────────────────────
   const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
   lines.push("");
-  lines.push(chalk.dim("  Full report available at:"));
-  lines.push(
-    `   ${chalk.underline(`https://app.dsintel.dev/report/${reportHash}`)}`,
-  );
+  if (reportHash) {
+    // TODO: Uncomment when app.dsintel.dev is live
+    // lines.push(chalk.dim("  Full report available at:"));
+    // lines.push(`   ${chalk.underline(`https://app.dsintel.dev/report/${reportHash}`)}`);
+    lines.push(chalk.dim(`  Report hash: ${reportHash}`));
+  }
+  lines.push(chalk.dim("  Web dashboard coming soon."));
   lines.push(chalk.dim(`  Completed in ${elapsed}s`));
   lines.push("");
 

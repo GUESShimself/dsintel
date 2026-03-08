@@ -50,7 +50,7 @@ program
 
       // Generate a short hash from the file contents for the report URL
       const raw = await readFile(file, "utf-8");
-      const hash = createHash("sha256").update(raw).digest("hex").slice(0, 10);
+      const reportHash = createHash("sha256").update(raw).digest("hex").slice(0, 10);
 
       let report: string;
 
@@ -61,7 +61,7 @@ program
         const now = new Date().toISOString().replace("T", " ").replace(/\.\d+Z$/, " UTC");
         report = formatCliReport(summary, {
           verbose: opts.verbose,
-          reportHash: hash,
+          reportHash,
           repo: gitCtx.repo,
           branch: gitCtx.branch,
           commit: gitCtx.commit,

@@ -1,0 +1,44 @@
+{
+  "color": {
+    "$type": "color",
+    "base": {
+      "blue": {
+        "$value": "#0066ff"
+      },
+      "gray": {
+        "$value": "#9a9a9a"
+      }
+    },
+    "brand": {
+      "primary": {
+        "$value": "{color.base.blue}"
+      }
+    },
+    "surface": {
+      "default": {
+        "$value": "#f5f5f5",
+        "$description": "Default surface color"
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "xs": { "$value": "4px" },
+    "sm": { "$value": "8px" },
+    "md": { "$value": "16px" },
+    "lg": { "$value": "24px" }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "family": {
+      "sans": { "$value": "Inter, sans-serif" },
+      "mono": { "$value": "JetBrains Mono, monospace" }
+    }
+  },
+  "radius": {
+    "$type": "borderRadius",
+    "sm": { "$value": "4px" },
+    "md": { "$value": "8px" },
+    "lg": { "$value": "16px" }
+  }
+}

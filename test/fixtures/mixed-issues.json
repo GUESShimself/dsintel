@@ -1,0 +1,37 @@
+{
+  "color": {
+    "$type": "color",
+    "base": {
+      "blue": { "$value": "#0066ff" },
+      "red": { "$value": "#ff3333" },
+      "gray": { "$value": "#9a9a9a" }
+    },
+    "brand": {
+      "primary": { "$value": "{color.base.blue}" }
+    },
+    "surface": {
+      "default": {
+        "$value": "{color.base.red}",
+        "$description": "Should be neutral but points to red"
+      }
+    },
+    "brandPrimary": {
+      "$value": "#0066ff"
+    }
+  },
+  "spacing-lg": {
+    "$type": "dimension",
+    "$value": "24px"
+  },
+  "font": {
+    "$type": "fontFamily",
+    "size": {
+      "xxl": { "$value": "32px" }
+    }
+  },
+  "radius": {
+    "$type": "borderRadius",
+    "sm": { "$value": "4px" },
+    "md": { "$value": "8px" }
+  }
+}

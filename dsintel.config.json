@@ -1,0 +1,43 @@
+{
+  "rules": {
+    "naming": {
+      "enabled": true,
+      "severity": "error",
+      "convention": "lowercase"
+    },
+    "unused": {
+      "enabled": true,
+      "severity": "warn"
+    },
+    "semantic-drift": {
+      "enabled": true,
+      "severity": "error",
+      "saturationThreshold": 20,
+      "neutralKeywords": [
+        "surface",
+        "background",
+        "bg",
+        "neutral",
+        "gray",
+        "grey",
+        "white",
+        "black",
+        "border",
+        "outline",
+        "shadow"
+      ],
+      "brandKeywords": [
+        "brand",
+        "primary",
+        "secondary",
+        "accent",
+        "interactive",
+        "action",
+        "link"
+      ]
+    }
+  },
+  "reporter": {
+    "maxIssuesPerCategory": 5
+  }
+}

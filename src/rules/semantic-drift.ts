@@ -1,5 +1,6 @@
 import { ParsedToken } from "../parser/types.js";
-import { AuditIssue, AuditRule } from "./types.js";
+import { AuditIssue, AuditRule, Severity } from "./types.js";
+import { ResolvedSemanticDriftConfig } from "../config/types.js";
 
 /**
  * Detects tokens whose resolved value diverges from what their name implies.
@@ -14,7 +15,7 @@ import { AuditIssue, AuditRule } from "./types.js";
  * that cross semantic boundaries.
  */
 
-const NEUTRAL_NAMES = new Set([
+const DEFAULT_NEUTRAL_NAMES = [
   "surface",
   "background",
   "bg",
@@ -26,9 +27,9 @@ const NEUTRAL_NAMES = new Set([
   "border",
   "outline",
   "shadow",
-]);
+];
 
-const BRAND_NAMES = new Set([
+const DEFAULT_BRAND_NAMES = [
   "brand",
   "primary",
   "secondary",
@@ -36,16 +37,7 @@ const BRAND_NAMES = new Set([
   "interactive",
   "action",
   "link",
-]);
-
-function getSemanticGroup(path: string): "neutral" | "brand" | "unknown" {
-  const segments = path.toLowerCase().split(".");
-  for (const seg of segments) {
-    if (NEUTRAL_NAMES.has(seg)) return "neutral";
-    if (BRAND_NAMES.has(seg)) return "brand";
-  }
-  return "unknown";
-}
+];
 
 /** Parse a hex color and return HSL saturation (0-100). */
 function hexSaturation(hex: string): number | null {
@@ -90,40 +82,76 @@ function resolveValue(
   return token.value;
 }
 
-export const semanticDriftRule: AuditRule = {
-  name: "semantic-drift",
-
-  run(tokens: ParsedToken[]): AuditIssue[] {
-    const tokenMap = new Map<string, ParsedToken>();
-    for (const t of tokens) tokenMap.set(t.path, t);
-
-    const issues: AuditIssue[] = [];
-
-    for (const token of tokens) {
-      if (token.category !== "color") continue;
-
-      const semanticGroup = getSemanticGroup(token.path);
-      if (semanticGroup === "unknown") continue;
-
-      const resolved = resolveValue(token, tokenMap);
-      if (typeof resolved !== "string") continue;
-
-      const saturation = hexSaturation(resolved);
-      if (saturation === null) continue;
-
-      // Neutral tokens with high saturation → drift
-      if (semanticGroup === "neutral" && saturation > 20) {
-        issues.push({
-          token,
-          severity: "error",
-          issueType: "semantic drift",
-          message: `Token "${token.path}" implies neutral but resolves to a saturated color (saturation: ${saturation}%)`,
-          suggestedFix:
-            "Value diverges from alias chain — check reference chain",
-        });
-      }
+function buildSemanticDriftRule(
+  neutralNames: Set<string>,
+  brandNames: Set<string>,
+  threshold: number,
+  severity: Severity,
+): AuditRule {
+  function getSemanticGroup(path: string): "neutral" | "brand" | "unknown" {
+    const segments = path.toLowerCase().split(".");
+    for (const seg of segments) {
+      if (neutralNames.has(seg)) return "neutral";
+      if (brandNames.has(seg)) return "brand";
     }
+    return "unknown";
+  }
 
-    return issues;
-  },
-};
+  return {
+    name: "semantic-drift",
+
+    run(tokens: ParsedToken[]): AuditIssue[] {
+      const tokenMap = new Map<string, ParsedToken>();
+      for (const t of tokens) tokenMap.set(t.path, t);
+
+      const issues: AuditIssue[] = [];
+
+      for (const token of tokens) {
+        if (token.category !== "color") continue;
+
+        const semanticGroup = getSemanticGroup(token.path);
+        if (semanticGroup === "unknown") continue;
+
+        const resolved = resolveValue(token, tokenMap);
+        if (typeof resolved !== "string") continue;
+
+        const saturation = hexSaturation(resolved);
+        if (saturation === null) continue;
+
+        // Neutral tokens with high saturation → drift
+        if (semanticGroup === "neutral" && saturation > threshold) {
+          issues.push({
+            token,
+            severity,
+            issueType: "semantic drift",
+            message: `Token "${token.path}" implies neutral but resolves to a saturated color (saturation: ${saturation}%)`,
+            suggestedFix:
+              "Value diverges from alias chain — check reference chain",
+          });
+        }
+      }
+
+      return issues;
+    },
+  };
+}
+
+/** Create a semantic drift rule with custom config. */
+export function createSemanticDriftRule(
+  config: ResolvedSemanticDriftConfig,
+): AuditRule {
+  return buildSemanticDriftRule(
+    new Set(config.neutralKeywords),
+    new Set(config.brandKeywords),
+    config.saturationThreshold,
+    config.severity,
+  );
+}
+
+/** Default semantic drift rule (backward compatible). */
+export const semanticDriftRule: AuditRule = buildSemanticDriftRule(
+  new Set(DEFAULT_NEUTRAL_NAMES),
+  new Set(DEFAULT_BRAND_NAMES),
+  20,
+  "error",
+);

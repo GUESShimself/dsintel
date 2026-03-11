@@ -18,10 +18,31 @@
       "default": {
         "$value": "{color.base.red}",
         "$description": "Oops — surface.default points to red instead of a neutral"
+      },
+      "bg_card": { "$value": "#ffffff" },
+      "bgHero": { "$value": "#f0f2f5" }
+    },
+    "neutral": {
+      "muted": {
+        "$value": "#3366cc",
+        "$description": "Named neutral but it's a saturated blue — semantic drift"
+      },
+      "subtle": {
+        "$value": "#4488aa",
+        "$description": "Another neutral with high saturation"
       }
     },
-    "bg_card": { "$value": "#ffffff" },
-    "textMuted": { "$value": "#767676" }
+    "textMuted": { "$value": "#767676" },
+    "text_secondary": { "$value": "#999999" },
+    "gray": {
+      "100": {
+        "$value": "#f1f5fb",
+        "$description": "Slightly blue-tinted gray — may trigger semantic drift"
+      },
+      "200": { "$value": "#e4eaf3" },
+      "500": { "$value": "#8892a0" },
+      "800": { "$value": "#343a40" }
+    }
   },
   "spacing-sm": {
     "$type": "dimension",
@@ -35,6 +56,10 @@
     "$type": "dimension",
     "$value": "24px"
   },
+  "spacing_xl": {
+    "$type": "dimension",
+    "$value": "32px"
+  },
   "font": {
     "$type": "fontFamily",
     "family": {
@@ -43,7 +68,8 @@
     },
     "size": {
       "bodyLarge": { "$value": "18px" },
-      "heading_xl": { "$value": "36px" }
+      "heading_xl": { "$value": "36px" },
+      "displayXXL": { "$value": "48px" }
     }
   },
   "radius": {
@@ -51,12 +77,45 @@
     "sm": { "$value": "4px" },
     "md": { "$value": "8px" }
   },
+  "shadow": {
+    "$type": "shadow",
+    "cardShadow": {
+      "$value": {
+        "offsetX": "0px",
+        "offsetY": "4px",
+        "blur": "12px",
+        "spread": "0px",
+        "color": "#0000001a"
+      }
+    },
+    "drop_shadow_lg": {
+      "$value": {
+        "offsetX": "0px",
+        "offsetY": "8px",
+        "blur": "24px",
+        "spread": "-4px",
+        "color": "#00000033"
+      }
+    }
+  },
+  "borderRadius": {
+    "$type": "dimension",
+    "$value": "8px",
+    "$description": "Flat token at root level — should be nested under a group"
+  },
   "legacy": {
     "$deprecated": true,
     "btn": {
       "$type": "color",
       "bg": { "$value": "#336699" },
       "hover": { "$value": "#264d73" }
+    },
+    "old": {
+      "spacing": {
+        "$type": "dimension",
+        "gutter": { "$value": "20px" },
+        "inset": { "$value": "12px" }
+      }
     }
   }
 }

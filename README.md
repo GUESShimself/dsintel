@@ -36,6 +36,23 @@ dsintel audit path/to/tokens.json --verbose
 dsintel audit path/to/tokens.json --output json
 ```
 
+### Convert flat tokens to DTCG
+
+If your tokens are in a flat key-value format (common when exporting from design tools), convert them to W3C DTCG first:
+
+```bash
+# Convert and write to a file
+dsintel convert flat-tokens.json --out tokens-dtcg.json
+
+# Convert and pipe to stdout
+dsintel convert flat-tokens.json
+
+# Override auto-detected prefix
+dsintel convert flat-tokens.json --prefix "myapp-" --out tokens-dtcg.json
+```
+
+The converter auto-detects naming prefixes, infers `$type` from categories, and reassembles composite tokens (shadows, typography).
+
 ### Try the examples
 
 ```bash
@@ -67,6 +84,70 @@ dsintel audit examples/messy-tokens.json
 }
 ```
 
+## Configuration
+
+Generate a config file to customize audit rules:
+
+```bash
+dsintel init
+```
+
+This creates a `dsintel.config.json` with all defaults:
+
+```json
+{
+  "rules": {
+    "naming": {
+      "enabled": true,
+      "severity": "error",
+      "convention": "lowercase"
+    },
+    "unused": {
+      "enabled": true,
+      "severity": "warn"
+    },
+    "semantic-drift": {
+      "enabled": true,
+      "severity": "error",
+      "saturationThreshold": 20,
+      "neutralKeywords": ["surface", "background", "bg", "neutral", "gray", "grey", "white", "black", "border", "outline", "shadow"],
+      "brandKeywords": ["brand", "primary", "secondary", "accent", "interactive", "action", "link"]
+    }
+  },
+  "reporter": {
+    "maxIssuesPerCategory": 5
+  }
+}
+```
+
+All fields are optional — only include what you want to change. The config file is auto-discovered by walking up from the current directory.
+
+### Config options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `rules.naming.enabled` | `true` | Enable/disable naming rule |
+| `rules.naming.severity` | `"error"` | `"error"` or `"warn"` |
+| `rules.naming.convention` | `"lowercase"` | `"lowercase"`, `"kebab-case"`, or a custom regex |
+| `rules.unused.enabled` | `true` | Enable/disable unused token detection |
+| `rules.unused.severity` | `"warn"` | `"error"` or `"warn"` |
+| `rules.semantic-drift.enabled` | `true` | Enable/disable semantic drift detection |
+| `rules.semantic-drift.severity` | `"error"` | `"error"` or `"warn"` |
+| `rules.semantic-drift.saturationThreshold` | `20` | HSL saturation % above which a "neutral" token is flagged |
+| `rules.semantic-drift.neutralKeywords` | *(see above)* | Path segments that imply neutral colors |
+| `rules.semantic-drift.brandKeywords` | *(see above)* | Path segments that imply brand colors |
+| `reporter.maxIssuesPerCategory` | `5` | Max issues shown per category (use `--verbose` to override) |
+
+### CLI flags
+
+```bash
+# Use a specific config file
+dsintel audit tokens.json --config path/to/config.json
+
+# Ignore config files entirely
+dsintel audit tokens.json --no-config
+```
+
 ## Development
 
 ```bash
@@ -81,12 +162,14 @@ npm run lint         # Type-check without emitting
 ```
 src/
 ├── index.ts              # CLI entry point
+├── config/               # Configuration loading and defaults
 ├── parser/               # Token file parsing (DTCG format)
 ├── rules/                # Audit rules (naming, unused, semantic-drift)
 └── reporter/             # CLI report formatting
 test/
 ├── parser.test.ts        # Parser tests
 ├── naming.test.ts        # Naming rule tests
+├── config.test.ts        # Config loading and merging tests
 └── fixtures/             # Sample token files
 ```
 

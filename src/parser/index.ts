@@ -8,30 +8,18 @@ export { ParsedToken, ParseResult, TokenCategory } from "./types.js";
 function detectFormat(
   json: Record<string, unknown>,
 ): "dtcg" | "tokens-studio" | "unknown" {
-  // DTCG files use $value at the leaf level
-  // Walk one level deep to check for $value keys
-  for (const value of Object.values(json)) {
-    if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-      const obj = value as Record<string, unknown>;
-      if ("$value" in obj) return "dtcg";
-      if ("value" in obj && !("$value" in obj)) return "tokens-studio";
-
-      // Check one more level deep
-      for (const nested of Object.values(obj)) {
-        if (
-          nested !== null &&
-          typeof nested === "object" &&
-          !Array.isArray(nested)
-        ) {
-          const nestedObj = nested as Record<string, unknown>;
-          if ("$value" in nestedObj) return "dtcg";
-          if ("value" in nestedObj && !("$value" in nestedObj))
-            return "tokens-studio";
-        }
+  function walk(obj: Record<string, unknown>): "dtcg" | "tokens-studio" | "unknown" {
+    if ("$value" in obj) return "dtcg";
+    if ("value" in obj) return "tokens-studio";
+    for (const val of Object.values(obj)) {
+      if (val !== null && typeof val === "object" && !Array.isArray(val)) {
+        const result = walk(val as Record<string, unknown>);
+        if (result !== "unknown") return result;
       }
     }
+    return "unknown";
   }
-  return "unknown";
+  return walk(json);
 }
 
 export async function parseTokenFile(filePath: string): Promise<ParseResult> {

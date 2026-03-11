@@ -31,7 +31,7 @@ describe("Naming Rule", () => {
 
     const issues = namingRule.run(tokens);
     expect(issues).toHaveLength(1);
-    expect(issues[0].issueType).toBe("naming: non-DTCG");
+    expect(issues[0].issueType).toBe("naming: convention");
     expect(issues[0].suggestedFix).toContain("color.brand.primary");
   });
 
@@ -77,6 +77,16 @@ describe("Naming Rule", () => {
     const tokens = [
       makeToken("font.size.h1", ["font", "size", "h1"]),
       makeToken("spacing.x2", ["spacing", "x2"]),
+    ];
+
+    const issues = namingRule.run(tokens);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("allows space-separated lowercase names", () => {
+    const tokens = [
+      makeToken("brand.color.acid green", ["brand", "color", "acid green"]),
+      makeToken("brand.color.hot pink", ["brand", "color", "hot pink"]),
     ];
 
     const issues = namingRule.run(tokens);

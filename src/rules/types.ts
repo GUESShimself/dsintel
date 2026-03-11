@@ -2,7 +2,7 @@ import { ParsedToken, TokenCategory } from "../parser/types.js";
 
 export type Severity = "error" | "warn";
 
-export type IssueType = "naming: non-DTCG" | "unused" | "semantic drift";
+export type IssueType = "naming: non-DTCG" | "naming: convention" | "unused" | "semantic drift" | "circular reference";
 
 export interface AuditIssue {
   token: ParsedToken;

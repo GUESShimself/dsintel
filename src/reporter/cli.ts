@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { AuditIssue, AuditSummary } from "../rules/types.js";
 import { TokenCategory } from "../parser/types.js";
 
-const MAX_ISSUES_PER_CATEGORY = 5;
+const DEFAULT_MAX_ISSUES = 5;
 
 function severityBadge(severity: "error" | "warn"): string {
   return severity === "error"
@@ -36,6 +36,7 @@ export interface CliReportOptions {
   branch?: string;
   commit?: string;
   timestamp?: string;
+  maxIssuesPerCategory?: number;
 }
 
 export function formatCliReport(
@@ -50,6 +51,7 @@ export function formatCliReport(
     branch,
     commit,
     timestamp,
+    maxIssuesPerCategory = DEFAULT_MAX_ISSUES,
   } = options;
   const lines: string[] = [];
   const startTime = performance.now();
@@ -114,7 +116,7 @@ export function formatCliReport(
 
       const display = verbose
         ? issues
-        : issues.slice(0, MAX_ISSUES_PER_CATEGORY);
+        : issues.slice(0, maxIssuesPerCategory);
 
       for (const issue of display) {
         const badge = severityBadge(issue.severity);
@@ -127,8 +129,8 @@ export function formatCliReport(
         lines.push("");
       }
 
-      if (!verbose && issues.length > MAX_ISSUES_PER_CATEGORY) {
-        const remaining = issues.length - MAX_ISSUES_PER_CATEGORY;
+      if (!verbose && issues.length > maxIssuesPerCategory) {
+        const remaining = issues.length - maxIssuesPerCategory;
         lines.push(
           chalk.dim(
             `    ... ${remaining} more (run with --verbose to expand all)`,

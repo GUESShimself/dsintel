@@ -4,3 +4,6 @@ dist/
 .DS_Store
 CLAUDE.md
 report.html
+wireframes/*.pen
+wireframes/CLI Audit Report – dsintel audit.png
+wireframes/Web Dashboard – DS Intelligence.png

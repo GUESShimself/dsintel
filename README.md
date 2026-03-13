@@ -8,7 +8,8 @@ A CLI tool that audits design token files for quality and consistency issues. Su
 
 `dsintel audit` parses your token files and checks for:
 
-- **Naming violations** — enforces DTCG dot-notation naming (catches camelCase, kebab-case, snake_case)
+- **Circular references** — detects alias cycles that would cause infinite resolution loops (spec MUST)
+- **Naming violations** — spec-forbidden characters (`naming: non-DTCG`) and convention lint (`naming: convention`)
 - **Unused tokens** — detects tokens that are never referenced as aliases
 - **Semantic drift** — flags color tokens whose resolved values contradict their names (e.g. a "neutral" token with high saturation)
 
@@ -17,8 +18,7 @@ Each issue includes a severity level, category, and suggested fix.
 ## Install
 
 ```bash
-npm install
-npm run build
+npm install -g dsintel
 ```
 
 Requires Node.js >= 20.
@@ -32,8 +32,11 @@ dsintel audit path/to/tokens.json
 # Show all issues (default truncates to 5 per category)
 dsintel audit path/to/tokens.json --verbose
 
-# Machine-readable output
+# Machine-readable JSON output
 dsintel audit path/to/tokens.json --output json
+
+# Self-contained HTML report (stdout)
+dsintel audit path/to/tokens.json --output html > report.html
 ```
 
 ### Convert flat tokens to DTCG
@@ -155,22 +158,28 @@ npm run dev          # Watch mode (TypeScript)
 npm test             # Run tests
 npm run test:watch   # Watch mode (tests)
 npm run lint         # Type-check without emitting
+npm run screenshot   # Regenerate CLI screenshots (requires freeze)
 ```
 
 ## Project structure
 
-```
+```text
 src/
 ├── index.ts              # CLI entry point
 ├── config/               # Configuration loading and defaults
-├── parser/               # Token file parsing (DTCG format)
-├── rules/                # Audit rules (naming, unused, semantic-drift)
-└── reporter/             # CLI report formatting
+├── converter/            # Flat-to-DTCG token conversion
+├── parser/               # Token file parsing (DTCG, Tokens Studio)
+├── rules/                # Audit rules (circular-refs, naming, unused, semantic-drift)
+└── reporter/             # Output formatters (cli, json, html)
+scripts/
+└── screenshot.sh         # Regenerate README screenshots via freeze
 test/
-├── parser.test.ts        # Parser tests
-├── naming.test.ts        # Naming rule tests
-├── config.test.ts        # Config loading and merging tests
-└── fixtures/             # Sample token files
+├── parser.test.ts
+├── naming.test.ts
+├── circular-refs.test.ts
+├── config.test.ts
+├── converter.test.ts
+└── tokens-studio.test.ts
 ```
 
 ## License

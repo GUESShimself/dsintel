@@ -17,6 +17,8 @@ export interface ParsedToken {
   aliases: string[];
   /** Whether the token is deprecated ($deprecated) */
   deprecated?: boolean | string;
+  /** Vendor/tool extensions from $extensions */
+  extensions?: Record<string, unknown>;
   /** Inferred category */
   category: TokenCategory;
 }

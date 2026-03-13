@@ -18,6 +18,7 @@ export function formatJsonReport(summary: AuditSummary): string {
       message: issue.message,
       ...(issue.suggestedFix ? { suggestedFix: issue.suggestedFix } : {}),
       ...(issue.token.deprecated ? { deprecated: issue.token.deprecated } : {}),
+      ...(issue.token.extensions ? { extensions: issue.token.extensions } : {}),
     })),
   };
 

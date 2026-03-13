@@ -69,6 +69,72 @@ describe("DTCG Parser", () => {
     expect(result.tokens[0].description).toBe("Default surface color");
   });
 
+  it("preserves $extensions as extensions field", () => {
+    const result = parseDTCG({
+      color: {
+        $type: "color",
+        brand: {
+          primary: {
+            $value: "#0066ff",
+            $extensions: {
+              "com.figma": { scopes: ["ALL_FILLS"] },
+            },
+          },
+        },
+      },
+    });
+
+    expect(result.tokens[0].extensions).toEqual({
+      "com.figma": { scopes: ["ALL_FILLS"] },
+    });
+  });
+
+  it("omits extensions when $extensions is absent", () => {
+    const result = parseDTCG({
+      color: { $type: "color", base: { $value: "#fff" } },
+    });
+
+    expect(result.tokens[0].extensions).toBeUndefined();
+  });
+
+  it("normalizes object-format dimension value to string", () => {
+    const result = parseDTCG({
+      spacing: {
+        md: { $value: { value: 16, unit: "px" }, $type: "dimension" },
+      },
+    });
+
+    expect(result.tokens[0].value).toBe("16px");
+  });
+
+  it("normalizes object-format duration value to string", () => {
+    const result = parseDTCG({
+      motion: {
+        fast: { $value: { value: 200, unit: "ms" }, $type: "duration" },
+      },
+    });
+
+    expect(result.tokens[0].value).toBe("200ms");
+  });
+
+  it("leaves non-dimension object values untouched", () => {
+    const result = parseDTCG({
+      shadow: {
+        md: {
+          $value: { offsetX: "0", offsetY: "4px", blur: "8px", color: "#000" },
+          $type: "shadow",
+        },
+      },
+    });
+
+    expect(result.tokens[0].value).toEqual({
+      offsetX: "0",
+      offsetY: "4px",
+      blur: "8px",
+      color: "#000",
+    });
+  });
+
   it("handles deeply nested tokens", () => {
     const result = parseDTCG({
       color: {

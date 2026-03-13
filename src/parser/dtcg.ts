@@ -87,6 +87,30 @@ function collectAliases(value: unknown): string[] {
   return aliases;
 }
 
+const DIMENSION_TYPES = new Set(["dimension", "duration"]);
+
+/**
+ * Normalize object-format dimension/duration values to string form.
+ * { value: 16, unit: "px" } → "16px"
+ * { value: 200, unit: "ms" } → "200ms"
+ * All other values are returned as-is.
+ */
+function normalizeDimensionValue(value: unknown, type: string | undefined): unknown {
+  if (
+    type &&
+    DIMENSION_TYPES.has(type) &&
+    value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value)
+  ) {
+    const obj = value as Record<string, unknown>;
+    if (typeof obj["value"] === "number" && typeof obj["unit"] === "string") {
+      return `${obj["value"]}${obj["unit"]}`;
+    }
+  }
+  return value;
+}
+
 function isDTCGToken(node: Record<string, unknown>): boolean {
   return "$value" in node;
 }
@@ -125,10 +149,18 @@ function walk(
         ? node["$deprecated"]
         : groupDeprecated;
 
+    // Collect $extensions if present
+    const extensions =
+      node["$extensions"] !== null &&
+      typeof node["$extensions"] === "object" &&
+      !Array.isArray(node["$extensions"])
+        ? (node["$extensions"] as Record<string, unknown>)
+        : undefined;
+
     tokens.push({
       path,
       rawSegments: [...segments],
-      value: rawValue,
+      value: normalizeDimensionValue(rawValue, type),
       type,
       description:
         typeof node["$description"] === "string"
@@ -137,6 +169,7 @@ function walk(
       alias: parseAlias(rawValue),
       aliases: collectAliases(rawValue),
       deprecated: tokenDeprecated || undefined,
+      ...(extensions ? { extensions } : {}),
       category: inferCategory(type, path),
     });
     return;

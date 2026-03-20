@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { namingRule } from "../src/rules/naming.js";
+import { namingRule, createNamingRule } from "../src/rules/naming.js";
+
+const lowercaseRule = createNamingRule({ enabled: true, severity: "error", convention: "lowercase" });
 import { ParsedToken } from "../src/parser/types.js";
 
 function makeToken(path: string, segments?: string[]): ParsedToken {
@@ -24,43 +26,52 @@ describe("Naming Rule", () => {
     expect(issues).toHaveLength(0);
   });
 
-  it("flags camelCase segments", () => {
+  it("flags camelCase segments when convention is configured", () => {
+    const tokens = [
+      makeToken("color.brandPrimary", ["color", "brandPrimary"]),
+    ];
+
+    const issues = lowercaseRule.run(tokens);
+    expect(issues).toHaveLength(1);
+    expect(issues[0].issueType).toBe("naming: convention");
+    expect(issues[0].suggestedFix).toContain("color.brand primary");
+  });
+
+  it("does not flag camelCase by default (no convention configured)", () => {
     const tokens = [
       makeToken("color.brandPrimary", ["color", "brandPrimary"]),
     ];
 
     const issues = namingRule.run(tokens);
-    expect(issues).toHaveLength(1);
-    expect(issues[0].issueType).toBe("naming: convention");
-    expect(issues[0].suggestedFix).toContain("color.brand.primary");
+    expect(issues).toHaveLength(0);
   });
 
-  it("flags kebab-case segments", () => {
+  it("flags kebab-case segments when convention is configured", () => {
     const tokens = [
       makeToken("spacing-lg", ["spacing-lg"]),
     ];
 
-    const issues = namingRule.run(tokens);
+    const issues = lowercaseRule.run(tokens);
     expect(issues).toHaveLength(1);
-    expect(issues[0].suggestedFix).toContain("spacing.lg");
+    expect(issues[0].suggestedFix).toContain("spacing lg");
   });
 
-  it("flags snake_case segments", () => {
+  it("flags snake_case segments when convention is configured", () => {
     const tokens = [
       makeToken("font_size_lg", ["font_size_lg"]),
     ];
 
-    const issues = namingRule.run(tokens);
+    const issues = lowercaseRule.run(tokens);
     expect(issues).toHaveLength(1);
-    expect(issues[0].suggestedFix).toContain("font.size.lg");
+    expect(issues[0].suggestedFix).toContain("font size lg");
   });
 
-  it("flags uppercase segments", () => {
+  it("flags uppercase segments when convention is configured", () => {
     const tokens = [
       makeToken("Color.Brand", ["Color", "Brand"]),
     ];
 
-    const issues = namingRule.run(tokens);
+    const issues = lowercaseRule.run(tokens);
     expect(issues).toHaveLength(1);
   });
 

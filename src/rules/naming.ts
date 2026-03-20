@@ -1,5 +1,5 @@
 import { ParsedToken } from "../parser/types.js";
-import { AuditIssue, AuditRule, Severity } from "./types.js";
+import { AuditIssue, AuditRule } from "./types.js";
 import { ResolvedNamingConfig } from "../config/types.js";
 
 /**
@@ -27,21 +27,22 @@ function hasForbiddenChars(segment: string): boolean {
 function suggestFix(segments: string[]): string {
   const fixed = segments
     .map((s) => {
-      // camelCase → split on uppercase boundaries
-      const split = s.replace(/([a-z])([A-Z])/g, "$1.$2").toLowerCase();
-      // kebab-case or snake_case → replace separators with dots
-      // spaces → hyphens (keeps as single segment, valid for translation tool output)
-      return split.replace(/[-_]/g, ".").replace(/ /g, "-");
+      // camelCase → split on uppercase boundaries with spaces
+      const decameled = s.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+      // hyphens and underscores → spaces (preserves single segment, spaces are spec-valid)
+      return decameled.replace(/[-_]/g, " ");
     })
     .join(".");
 
   return fixed;
 }
 
-function buildNamingRule(
-  pattern: RegExp,
-  severity: Severity,
-): AuditRule {
+/** Create a naming rule. Convention check is opt-in via config.convention. */
+export function createNamingRule(config: ResolvedNamingConfig): AuditRule {
+  const pattern = config.convention
+    ? (CONVENTIONS[config.convention] ?? new RegExp(config.convention))
+    : null;
+
   return {
     name: "naming",
 
@@ -49,7 +50,7 @@ function buildNamingRule(
       const issues: AuditIssue[] = [];
 
       for (const token of tokens) {
-        // Check for spec-forbidden characters first (always error)
+        // Spec check — always on (DTCG forbids ".", "{", "}", "$"-prefix)
         const forbidden = token.rawSegments.filter(hasForbiddenChars);
         if (forbidden.length > 0) {
           issues.push({
@@ -59,20 +60,22 @@ function buildNamingRule(
             message: `Token "${token.path}" contains forbidden characters in segment(s): ${forbidden.map((s) => `"${s}"`).join(", ")}. Names must not contain ".", "{", "}" or start with "$"`,
             suggestedFix: `Remove forbidden characters from token name`,
           });
-          continue; // Skip convention check if spec-invalid
+          continue;
         }
 
-        // Convention check using configured pattern
-        const hasInvalid = token.rawSegments.some((s) => !pattern.test(s));
-        if (hasInvalid) {
-          const fix = suggestFix(token.rawSegments);
-          issues.push({
-            token,
-            severity,
-            issueType: "naming: convention",
-            message: `Token "${token.path}" does not follow the configured naming convention`,
-            suggestedFix: `Rename → ${fix}`,
-          });
+        // Convention check — only if a convention is configured
+        if (pattern) {
+          const hasInvalid = token.rawSegments.some((s) => !pattern.test(s));
+          if (hasInvalid) {
+            const fix = suggestFix(token.rawSegments);
+            issues.push({
+              token,
+              severity: config.severity,
+              issueType: "naming: convention",
+              message: `Token "${token.path}" does not follow the configured naming convention`,
+              suggestedFix: `Rename → ${fix}`,
+            });
+          }
         }
       }
 
@@ -81,15 +84,8 @@ function buildNamingRule(
   };
 }
 
-/** Create a naming rule with custom config. */
-export function createNamingRule(config: ResolvedNamingConfig): AuditRule {
-  const pattern =
-    CONVENTIONS[config.convention] ?? new RegExp(config.convention);
-  return buildNamingRule(pattern, config.severity);
-}
-
-/** Default naming rule (backward compatible). */
-export const namingRule: AuditRule = buildNamingRule(
-  CONVENTIONS["lowercase"],
-  "error",
-);
+/** Default naming rule — spec violations only, no style convention. */
+export const namingRule: AuditRule = createNamingRule({
+  enabled: true,
+  severity: "error",
+});

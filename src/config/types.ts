@@ -36,7 +36,7 @@ export interface DsintelConfig {
 export interface ResolvedNamingConfig {
   enabled: boolean;
   severity: Severity;
-  convention: string;
+  convention?: string; // undefined = spec-only (no style convention enforced)
 }
 
 export interface ResolvedUnusedConfig {

@@ -3,7 +3,10 @@ dist/
 *.tsbuildinfo
 .DS_Store
 CLAUDE.md
-report.html
+report*.html
+examples/*-dtcg.json
+examples/test-file.json
+dsintel.config.json
 wireframes/*.pen
 wireframes/CLI Audit Report – dsintel audit.png
 wireframes/Web Dashboard – DS Intelligence.png

@@ -20,7 +20,6 @@ export const DEFAULT_CONFIG: ResolvedConfig = {
     naming: {
       enabled: true,
       severity: "error",
-      convention: "lowercase",
     },
     unused: {
       enabled: true,
@@ -103,7 +102,7 @@ export function resolveConfig(
       naming: {
         enabled: r.naming?.enabled ?? d.rules.naming.enabled,
         severity: r.naming?.severity ?? d.rules.naming.severity,
-        convention: r.naming?.convention ?? d.rules.naming.convention,
+        convention: r.naming?.convention, // no default — opt-in only
       },
       unused: {
         enabled: r.unused?.enabled ?? d.rules.unused.enabled,
